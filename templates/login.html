@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Inicia Sesion Registrate</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/static/css/LoginSignup.css">
+</head>
+
+<body>
+    <!--Caja para login, funciona con javascript. Aun no tiene funcionalidad-->
+    <div class="container">
+        <div class="header">
+            <div id="title" class="text">Registrate</div>
+            <div class="underline"></div>
+        </div>
+        <div class="inputs">
+            <div class="input" id="user">
+                <img src=static/img/user.png alt="" />
+                <input type="text" placeholder="Nombre"/>
+            </div>
+
+            <div class="input">
+                <img src=static/img/mail.png alt="" />
+                <input type="email" placeholder="Correo" />
+            </div>
+            <div class="input">
+                <img src=static/img/key.png alt="" />
+                <input type="password"  placeholder="Contraseña"/>
+            </div>
+        </div>
+        <div class="forgot-password" id="olvide">  ¿Olvidó su Contraseña? <span>Dale click aquí</span></div>
+        <div class="submit-container">
+            <div class="submit" id="registrate">Registrate</div>
+            <div class="submit" id="inicia-sesion">Inicia Sesion</div>
+        </div>
+        <div id="message"></div>
+      </div>
+
+<script src="/static/js/login.js"></script>
+</body>
+</html>

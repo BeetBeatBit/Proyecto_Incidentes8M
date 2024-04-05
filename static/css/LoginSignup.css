@@ -1,0 +1,143 @@
+/* animaciones */
+@keyframes slideDown {
+    from {
+      opacity: 0;
+      transform: translateY(-20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  @keyframes slideUp {
+    from {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    to {
+      opacity: 0;
+      transform: translateY(-20px);
+    }
+  }
+
+body{
+    background: #3c009d;
+    font-family: 'Roboto', sans-serif;
+
+}
+
+.container{
+    animation: slideDown 0.2s ease;
+    display: flex;
+    flex-direction: column;
+    margin: 300px;
+    margin-top: 20px;
+    background: #fff;
+    padding-bottom: 30px;
+    border-radius: 30px;
+    height: 600px;
+}
+
+.header{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 9px;
+    width: 100%;
+    margin-top: 30px;
+}
+
+.text{
+    animation: slideDown 1s ease;
+    color: #3c009d;
+    font-size: 48px;
+    font-weight:  700;
+}
+
+.underline{
+    animation: slideDown 1s ease;
+    width: 61px;
+    height: 6px;
+    background: #3c009d;
+    border-radius: 9px;
+}
+
+.inputs{
+    margin-top: 55px;
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+}
+
+.input{
+    animation: slideDown 1s ease;
+    display: flex;
+    align-items: center;
+    margin: auto;
+    width: 480px;
+    height: 80px;
+    background: #eaeaea;
+    border-radius: 6px;
+}
+
+
+.input img{
+    width: 20px;
+    height: 20px;
+    margin: 0px 20px;
+}
+
+.input input{
+    height: 50px;
+    width: 400px;
+    background: transparent;
+    border: none;
+    outline: none;
+    color: #797979;
+    font-size: 19px;
+}
+
+.forgot-password{
+    animation: slideDown 1s ease;
+    display: flex;
+    justify-content: center;
+    margin-top: 27px;
+    color: #797979;
+    font-size: 18px;
+}
+
+.forgot-password span{
+    color: #3c009d;
+    cursor: pointer;
+}
+
+.submit-container{
+    display: flex;
+    gap: 30px;
+    margin: 60px auto;
+}
+
+.submit{
+    animation: slideDown 1s ease;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 220px;
+    height: 59px;
+    color: #fff;
+    background: #4c00b4;
+    border-radius: 50px;
+    font-size: 19px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+#olvide{
+    display: none;
+}
+
+#inicia-sesion {
+    background: #0000004b;
+    color: #0000004b; /* Make the button appear greyed out */
+}
