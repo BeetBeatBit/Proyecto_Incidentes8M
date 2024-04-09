@@ -1,3 +1,4 @@
 venvpython/
+venv/
 pythonvirtual
 *.DS_Store
