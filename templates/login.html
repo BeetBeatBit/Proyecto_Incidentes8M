@@ -9,7 +9,7 @@
 
 <body>
     <!--Caja para login, funciona con javascript. Aun no tiene funcionalidad-->
-    <div class="container">
+    <div class="container" id="container">
         <div class="header">
             <div id="title" class="text">Registrate</div>
             <div class="underline"></div>
@@ -19,11 +19,87 @@
                 <img src=static/img/user.png alt="" />
                 <input type="text" placeholder="Nombre"/>
             </div>
-
+            <div class="input" id="apellidos">
+                <img src=static/img/user.png alt="" />
+                <input type="text" placeholder="Apellido Paterno" />
+                <input id="femenino" type="text" placeholder="Apellido Materno" />
+            </div>
+            <div class="input" id="curp">
+                <img src=static/img/user.png alt="" />
+                <input type="text" placeholder="CURP"/>
+            </div>
+            <div class="input" id="sex">
+                <img src=static/img/user.png alt="" />
+                <label for="sex-select">Sexo:</label>
+                <select id="sex-select" name="sex">
+                    <option  value="masculino">Masculino</option>
+                    <option  value="femenino">Femenino</option>
+                    <option  value="otro">Otro</option>
+                </select>
+            </div>            
             <div class="input">
                 <img src=static/img/mail.png alt="" />
                 <input type="email" placeholder="Correo" />
             </div>
+            <div class="input" id="civil">
+                <img src=static/img/user.png alt="" />
+                <label for="sex-select">Estado Civil:</label>
+                <select id="sex-select" name="estado-civil">
+                    <option  value="soltero">Soltero</option>
+                    <option  value="casado">Casado</option>
+                    <option  value="divorciado">Divorciado</option>
+                </select>
+            </div>  
+            <div class="input" id="estado">
+                <img src=static/img/user.png alt="" />
+                <label for="state-select">Estado:</label>
+                <select id="state-select" name="estado">
+                    <option value="DIF">Distrito Federal</option>
+                    <option value="AGS">Aguascalientes</option>
+                    <option value="BCN">Baja California</option>
+                    <option value="BCS">Baja California Sur</option>
+                    <option value="CAM">Campeche</option>
+                    <option value="CHP">Chiapas</option>
+                    <option value="CHI">Chihuahua</option>
+                    <option value="COA">Coahuila</option>
+                    <option value="COL">Colima</option>
+                    <option value="DUR">Durango</option>
+                    <option value="GTO">Guanajuato</option>
+                    <option value="GRO">Guerrero</option>
+                    <option value="HGO">Hidalgo</option>
+                    <option value="JAL">Jalisco</option>
+                    <option value="MEX">M&eacute;xico</option>
+                    <option value="MIC">Michoac&aacute;n</option>
+                    <option value="MOR">Morelos</option>
+                    <option value="NAY">Nayarit</option>
+                    <option value="NLE">Nuevo Le&oacute;n</option>
+                    <option value="OAX">Oaxaca</option>
+                    <option value="PUE">Puebla</option>
+                    <option value="QRO">Quer&eacute;taro</option>
+                    <option value="ROO">Quintana Roo</option>
+                    <option value="SLP">San Luis Potos&iacute;</option>
+                    <option value="SIN">Sinaloa</option>
+                    <option value="SON">Sonora</option>
+                    <option value="TAB">Tabasco</option>
+                    <option value="TAM">Tamaulipas</option>
+                    <option value="TLX">Tlaxcala</option>
+                    <option value="VER">Veracruz</option>
+                    <option value="YUC">Yucat&aacute;n</option>
+                    <option value="ZAC">Zacatecas</option>
+                </select>
+            </div>
+            <div class="input" id="municipio">
+                <img src=static/img/mail.png alt="" />
+                <input type="text" placeholder="Municipio" />
+            </div>  
+            <div class="input" id="colonia">
+                <img src=static/img/mail.png alt="" />
+                <input type="text" placeholder="Colonia" />
+            </div>
+            <div class="input" id="calle">
+                <img src=static/img/mail.png alt="" />
+                <input type="text" placeholder="Calle" />
+            </div>   
             <div class="input">
                 <img src=static/img/key.png alt="" />
                 <input type="password"  placeholder="Contraseña"/>
