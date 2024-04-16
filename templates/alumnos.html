@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Alumnos</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+  </head>
+  <body>
+
+    <div class="container mt-4">
+        <h1 class="mb-4">Dashboard de Alumno</h1>
+      
+        <div class="row">
+          <div class="col-md-6">
+            <h3>Datos Personales</h3>
+            <ul class="list-group">
+              <li class="list-group-item"><strong>Matrícula:</strong> uni_alumnos.matricula</li>
+
+              <!-- En el nombre va los apellidos y nombre juntos  -->
+              <li class="list-group-item"><strong>Apellido Paterno:</strong> uni_alumnos.apellido.paterno</li>
+              <li class="list-group-item"><strong>Apellido Materno:</strong> uni_alumnos.apellido.materno</li>
+              <li class="list-group-item"><strong>Nombre:</strong> uni_alumnos.ape_pat uni_alumnos.ape_mat uni_alumnos.nombres</li>
+              <li class="list-group-item"><strong>CURP:</strong> uni_alumnos.curp</li>
+              <li class="list-group-item"><strong>Género:</strong> uni_alumnos.genero</li>
+              <li class="list-group-item"><strong>Estado Civil:</strong> uni_alumnos.est_civil</li>
+              <li class="list-group-item"><strong>Fecha de Nacimiento:</strong> uni_alumnos.fec_nacimiento</li>
+            </ul>
+          </div>
+          <div class="col-md-6">
+            <h3>Domicilio y Contacto</h3>
+            <ul class="list-group">
+
+                <!-- En la direccion va Estado, Municipio, colonia y dirección-->
+              <li class="list-group-item"><strong>Estado:</strong> uni_alumnos.estado</li>
+              <li class="list-group-item"><strong>Municipio:</strong> uni_alumnos.municipop</li>
+              <li class="list-group-item"><strong>Colonia:</strong> uni_alumnos.colonia</li>
+              <li class="list-group-item"><strong>Dirección:</strong> uni_alumnos.dirección</li>
+              <li class="list-group-item"><strong>Teléfono:</strong> uni_alumnos.teléfono</li>
+              <li class="list-group-item"><strong>Celular:</strong> uni_alumnos.celular</li>
+              <li class="list-group-item"><strong>Email:</strong> uni_alumnos.email</li>
+            </ul>
+          </div>
+        </div>
+      
+        <div class="row mt-4">
+          <div class="col-md-12">
+            <h3>Información Académica</h3>
+            <ul class="list-group">
+              <li class="list-group-item"><strong>Carrera:</strong> uni_alumnos.cve_carrera</li>
+              <li class="list-group-item"><strong>Dependencia:</strong> uni_alumnos.cve_dependencia</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- <div class="row mt-4">
+          <div class="col-md-12">
+            <h3>Materias</h3>
+            <ul class="list-group">
+              <li class="list-group-item"><strong>Materia: </strong> uni_alumnos.materia</li>
+              <li class="list-group-item"><strong>Calificación:</strong> uni_alumnos.calificacion</li>
+            </ul>
+          </div>
+        </div> -->
+
+        <!-- Tabla de Materias y Calificaciones -->
+        <br>
+        <h3>Materias y Calificaciones</h3>
+        <div class="card">
+          
+          <div class="card-body">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>Materia</th>
+                  <th>Calificación</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Matemáticas</td>
+                  <td>9.5</td>
+                </tr>
+                <tr>
+                  <td>Historia</td>
+                  <td>8.0</td>
+                </tr>
+                <!-- Aquí puedes agregar más filas con otras materias y calificaciones -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      
+
+
+      </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js" integrity="sha384-0pUGZvbkm6XF6gxjEnlmuGrJXVbNuzT9qBBavbLwCsOGabYfZo0T0to5eqruptLy" crossorigin="anonymous"></script>
+  </body>
+</html>

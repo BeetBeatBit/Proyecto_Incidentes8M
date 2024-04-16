@@ -14,6 +14,32 @@ mysql = MySQL(app)
 def login():
     return render_template('login.html')
 
+# RUTAS PARA LOS TEMPLATES
+@app.route("/")
+def alumnos():
+    return render_template("alumnos.html")
+
+# FUNCIONES PARA RELLENAR EL DASHBOARD DE ALUMNOS
+@app.route('/alumnos.html', methods=['POST'])
+def search():
+    query = request.form['query']
+
+    cursor = mysql.database.cursor()
+    sql = "SELECT * FROM alumnos WHERE nombre LIKE %s OR apellido LIKE %s OR id LIKE %s"
+    data = (f'%{query}%', f'%{query}%', f'%{query}%') 
+    cursor.execute(sql, data)
+    alumnos = cursor.fetchall()
+
+    insertObject = []
+    columnNames = [column[0] for column in cursor.description]
+    for record in alumnos:
+        insertObject.append(dict(zip(columnNames, record)))
+    cursor.close()
+
+    cursor.close()
+
+    return render_template('alumnos.html', alumnos=insertObject)
+
 
 @app.route('/login', methods=['POST'])
 def login_post():
