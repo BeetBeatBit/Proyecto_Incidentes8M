@@ -100,7 +100,7 @@ loginButton.addEventListener('click', () => {
         // Maneja la respuesta del servidor
         if (response.ok) {
             // Si la respuesta es exitosa, redirige a la página de dashboard
-            window.location.href = '/dashboard';
+            window.location.href = '/verificacion';
         } else {
             // Si la respuesta no es exitosa, muestra un mensaje de error al usuario
             console.error('Error al iniciar sesión');

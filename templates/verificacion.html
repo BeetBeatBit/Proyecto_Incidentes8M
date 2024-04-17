@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body class="d-flex justify-content-center align-items-center" style="height: 100vh;">
+    <div class="card col-md-6">
+        <div class="text-center">
+                        <img src="/"
+                          style="width: 185px;" alt="logo">
+                        <h4 class="mt-1 mb-5 pb-1">Escuela Azul</h4>
+                      </div>
+        <div class="card-body">
+            <h1 class="card-title mb-4">Código de Verificación</h1>
+            {% if error %}
+            <p class="text-danger">{{ error }}</p>
+            {% endif %}
+            <form action="/verificar_codigo" method="post">
+                <div class="form-group">
+                    <label for="codigo_verificacion">Introduce el código de verificación:</label>
+                    <input type="text" class="form-control" id="codigo_verificacion" name="codigo_verificacion" maxlength="6" required>
+                </div>
+                <button type="submit" class="btn btn-primary btn-block">Verificar</button>
+            </form>
+
+            <div id="alert-container" class="mt-3">
+                {% if estado %}
+                    <div class="alert alert-danger" role="alert">
+                        {{ estado }}
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
