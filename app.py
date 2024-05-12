@@ -12,10 +12,19 @@ app = Flask(__name__)
 app.secret_key = 'vulnerabilidades'
 
 #Configuracion para la conexion a la BD
+#app.config['MYSQL_HOST'] = 'localhost'
+#app.config['MYSQL_USER'] = 'root'
+#app.config['MYSQL_PASSWORD'] = 'coloso123'
+#app.config['MYSQL_DB'] = 'universidad'
+
+
+#Configuracion para la conexion a la BD (ANDREW)
 app.config['MYSQL_HOST'] = 'localhost'
 app.config['MYSQL_USER'] = 'root'
-app.config['MYSQL_PASSWORD'] = 'coloso123'
+app.config['MYSQL_PASSWORD'] = '5248'
 app.config['MYSQL_DB'] = 'universidad'
+app.config['MYSQL_PORT'] = 3307  # Specify the port number
+
 
 # try:
 #     mydb = mysql.connector.connect(
@@ -47,6 +56,61 @@ def alumnos():
 def verificacion():
     return render_template("verificacion.html")
 
+@app.route('/registro', methods=['GET', 'POST'])
+def registro():
+    cursor = mysql.connection.cursor()
+    if request.method == 'POST':
+        # Collect all form data
+        matricula = request.form['matricula']
+        ape_pat = request.form['ape_pat']
+        ape_mat = request.form['ape_mat']
+        nombres = request.form['nombres']
+        curp = request.form['curp']
+        genero = request.form['genero']
+        est_civil = request.form['est_civil']
+        estado = request.form['estado']
+        municipio = request.form['municipio']
+        colonia = request.form['colonia']
+        direccion = request.form['direccion']
+        telefono = request.form['telefono']
+        celular = request.form['celular']
+        email = request.form['email']
+        fec_nacimiento = request.form['fec_nacimiento']
+        nombre_dependencia = request.form['dependencia']  # Assume dependencia is the name passed from the form
+        nombre_carrera = request.form['carrera']          # Assume carrera is the name passed from the form
+
+        # Fetch cve_dependencia from the database
+        cursor.execute("SELECT cve_dependencia FROM uni_dependencias WHERE nombre_dependencia = %s", (nombre_dependencia,))
+        cve_dependencia_result = cursor.fetchone()
+        cve_dependencia = cve_dependencia_result[0] if cve_dependencia_result else None
+
+        # Fetch cve_carrera from the database
+        cursor.execute("SELECT cve_carrera FROM uni_carreras WHERE nombre_carrera = %s", (nombre_carrera,))
+        cve_carrera_result = cursor.fetchone()
+        cve_carrera = cve_carrera_result[0] if cve_carrera_result else None
+
+        # Check if both cve_dependencia and cve_carrera are found
+        if not cve_dependencia or not cve_carrera:
+            return "Dependencia or Carrera not found", 400  # Return an error if any ID is not found
+
+        # Insert data into database
+        insert_query = """
+        INSERT INTO uni_alumnos (matricula, ape_pat, ape_mat, nombres, curp, genero, est_civil, estado, municipio, colonia, direccion, telefono, celular, email, fec_nacimiento, cve_dependencia, cve_carrera)
+        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+        """
+        cursor.execute(insert_query, (matricula, ape_pat, ape_mat, nombres, curp, genero, est_civil, estado, municipio, colonia, direccion, telefono, celular, email, fec_nacimiento, cve_dependencia, cve_carrera))
+        mysql.connection.commit()
+        return 'Registro completado'  # Or redirect to another page
+
+    # For GET request, fetch dependencias and carreras
+    cursor.execute("SELECT nombre_dependencia, cve_dependencia FROM uni_dependencias")
+    dependencias = cursor.fetchall()
+    cursor.execute("SELECT nombre_carrera, cve_carrera FROM uni_carreras")
+    carreras = cursor.fetchall()
+    return render_template('registro.html', dependencias=dependencias, carreras=carreras)
+
+
+    
 
 #Conexion de base de datos
 @app.route('/login', methods = ['GET','POST'])

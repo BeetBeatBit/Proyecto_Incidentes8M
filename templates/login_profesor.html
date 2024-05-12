@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Login Profesor</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/static/css/LoginSignup.css">
+</head>
+
+<body>
+    <div class="container" id="container">
+        <form action="/login_profesor" method="POST">
+            <div class="header">
+                <div id="title" class="text">Buenos dias, Profesor</div>
+                <div class="underline"></div>
+            </div>
+            <div class="inputs">
+                <!-- EMAIL CORREO -->
+                <div class="input">
+                    <img src="/static/img/mail.png" alt="" />
+                    <input type="email" name="correo" placeholder="Correo" required />
+                </div>
+                <div class="input">
+                    <img src="/static/img/key.png" alt="" />
+                    <input type="password" name="password" placeholder="Contraseña" required />
+                </div>
+            </div>
+            <div class="forgot-password">
+                <a href="/ ">¿Eres un estudiante? Dale click aquí</a>
+            </div>
+            <div class="submit-container">
+                <button type="submit" id="login-btn" class="submit">Iniciar Sesión</button>
+            </div>
+        </form>
+        <div id="message"></div>
+    </div>
+</body>
+</html>

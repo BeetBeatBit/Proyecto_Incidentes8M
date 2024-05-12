@@ -13,7 +13,7 @@ loginButton.addEventListener('click', () => {
     formData.append('contraseña', contraseña);
 
     // Envía una solicitud POST al servidor para iniciar sesión
-    fetch('/login', {
+    fetch('/login_profesor', {
         method: 'POST',
         body: formData
     })

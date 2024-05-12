@@ -36,7 +36,19 @@ body{
     background: #fff;
     padding-bottom: 30px;
     border-radius: 30px;
-    height: 1500px;
+    height: 535px;
+}
+
+.registro{
+    animation: slideDown 0.2s ease;
+    display: flex;
+    flex-direction: column;
+    margin: 300px;
+    margin-top: 20px;
+    background: #fff;
+    padding-bottom: 30px;
+    border-radius: 30px;
+    height: 1935px;
 }
 
 .header{
@@ -198,8 +210,20 @@ select{
 
 .submit-container{
     display: flex;
+    justify-content: center;
+
     gap: 30px;
     margin: 60px auto;
+}
+
+.submit-registro{
+    display: flex;
+    justify-content: center;    
+    gap: 30px;
+    margin-top: -370px;
+   margin-bottom:-400px;
+
+
 }
 
 .submit{
@@ -218,7 +242,7 @@ select{
 }
 
 #olvide{
-    display: none;
+    display: flex;
 }
 
 #inicia-sesion {
