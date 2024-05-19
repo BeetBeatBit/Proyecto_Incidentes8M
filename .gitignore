@@ -1,5 +1,5 @@
 venvpython/
 venv/
 entornovirtual/
-pythonvirtual
+pythonvirtual/
 *.DS_Store

@@ -9,7 +9,13 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 
 app = Flask(__name__)
-app.secret_key = 'vulnerabilidades'
+app.secret_key = 'fj29P$#2@jT!QaL5'
+
+#Conexion BD Yahir
+app.config['MYSQL_HOST'] = 'localhost'
+app.config['MYSQL_USER'] = 'root'
+app.config['MYSQL_PASSWORD'] = 'aries1901'
+app.config['MYSQL_DB'] = 'universidad'
 
 #Configuracion para la conexion a la BD
 #app.config['MYSQL_HOST'] = 'localhost'
@@ -19,11 +25,11 @@ app.secret_key = 'vulnerabilidades'
 
 
 #Configuracion para la conexion a la BD (ANDREW)
-app.config['MYSQL_HOST'] = 'localhost'
-app.config['MYSQL_USER'] = 'root'
-app.config['MYSQL_PASSWORD'] = '5248'
-app.config['MYSQL_DB'] = 'universidad'
-app.config['MYSQL_PORT'] = 3307  # Specify the port number
+#app.config['MYSQL_HOST'] = 'localhost'
+#app.config['MYSQL_USER'] = 'root'
+#app.config['MYSQL_PASSWORD'] = '5248'
+#app.config['MYSQL_DB'] = 'universidad'
+#app.config['MYSQL_PORT'] = 3307  # Specify the port number
 
 
 # try:
@@ -113,47 +119,52 @@ def registro():
     
 
 #Conexion de base de datos
-@app.route('/login', methods = ['GET','POST'])
+@app.route('/login', methods=['GET', 'POST'])
 def login2():
-    if mysql.connection is None:
-        return render_template('/login.html', mensaje='Error al conectarse a la base de datos')
-    
-    correo = request.form['correo']
-    contrasena = request.form['contraseña']
+    if request.method == 'POST':
+        correo = request.form.get('correo')
+        contrasena = request.form.get('contraseña')
 
-    try:
-        mycursor = mysql.connection.cursor()
+        if not correo or not contrasena:
+            return render_template('/login.html', error='Por favor, completa todos los campos requeridos.')
 
-        mycursor.execute("SELECT id, correo, contraseña FROM admin_users WHERE correo = %s", (correo,))
-        result = mycursor.fetchone()
+        if mysql.connection is None:
+            return render_template('/login.html', mensaje='Error al conectarse a la base de datos')
 
-        if result:
-            idUsuario, emailUsuario, contrasena_bd = result
-            
-            if contrasena == contrasena_bd:
-                session['correo'] = correo  # Almacenar el nombre de usuario en la sesión
+        try:
+            mycursor = mysql.connection.cursor()
+            mycursor.execute("SELECT id, correo, contraseña, tipo_usuario FROM admin_users WHERE correo = %s", (correo,))
+            result = mycursor.fetchone()
 
-                #Autenticacion en dos pasos
-                codigo2FA = generar_codigo_autenticacion()
-                fechaActual = obtenerFechaActual()
+            if result:
+                idUsuario, emailUsuario, contrasena_bd, tipo_usuario = result
+                
+                if contrasena == contrasena_bd:
+                    session['correo'] = correo
+                    session['idUsuario'] = idUsuario
+                    session['tipo_usuario'] = tipo_usuario  # Asegurarse de que 'tipo_usuario' se guarda en la base de datos
 
-                enviar_correo_autenticacion(codigo2FA, emailUsuario)
-                guardar_codigo_autenticacion_bd(codigo2FA, idUsuario, fechaActual)
+                    # Autenticacion en dos pasos
+                    codigo2FA = generar_codigo_autenticacion()
+                    fechaActual = obtenerFechaActual()
 
-                # Almacena las variables en la sesión
-                session['idUsuario'] = idUsuario
-                session['fechaActual'] = fechaActual
+                    enviar_correo_autenticacion(codigo2FA, emailUsuario)
+                    guardar_codigo_autenticacion_bd(codigo2FA, idUsuario, fechaActual)
 
-                return render_template('/verificacion.html', correcta='Has iniciado sesión correctamente')
+                    session['fechaActual'] = fechaActual
+
+                    return redirect(url_for('verificar_codigo'))
+                else:
+                    return render_template('/login.html', error='Contraseña incorrecta')
             else:
-                # Nombre de usuario o contraseña incorrectos
-                return render_template('/login.html', error='Nombre de usuario o contraseña incorrectos')
-        else:
-            # Nombre de usuario no encontrado en la base de datos
-            return render_template('/login.html', error='Nombre de usuario o contraseña incorrectos')
-    except MySQLdb._exceptions.MySQLError as error:
-        print("Error al ejecutar la consulta a la base de datos: {}".format(error))
-        return render_template('/login.html', error='Error al ejecutar la consulta a la base de datos')
+                return render_template('/login.html', error='No se encontró el usuario')
+        except MySQLdb._exceptions.MySQLError as error:
+            print("Error al ejecutar la consulta a la base de datos: {}".format(error))
+            return render_template('/login.html', error='Error al ejecutar la consulta a la base de datos')
+    else:
+        return render_template('/login.html')
+
+
 
 @app.route('/logout')
 def logout():
@@ -163,48 +174,39 @@ def logout():
 #Verificacion en dos pasos
 @app.route('/verificar_codigo', methods=['GET', 'POST'])
 def verificar_codigo():
-    codigoUsuario = None
-
     if request.method == 'POST':
+        codigoUsuario = request.form.get('codigo_verificacion')
+        tipo_usuario = session.get('tipo_usuario')  # Asegúrate de que esto es correcto y consistente
 
-        try:
-            codigoUsuario = request.form['codigo_verificacion']
-            idUsuarioVer = session.get('idUsuario')
-            fechaActualVer = session.get('fechaActual')
+        if tipo_usuario == 'admin':
+            usuarioId = session.get('idUsuario')
+        elif tipo_usuario == 'profesor':
+            usuarioId = session.get('cve_profesor')
+        else:
+            return render_template('verificacion.html', error='Tipo de usuario no reconocido.')
 
-            print(idUsuarioVer)
-            print(fechaActualVer)
 
-            cursor = mysql.connection.cursor()
+        cursor = mysql.connection.cursor()
+        # Asegúrate de que la consulta está utilizando el ID de usuario correcto y ordenando por fecha descendente
+        cursor.execute("SELECT code FROM twofactorcodes WHERE idUsuario = %s ORDER BY fecha DESC LIMIT 1", (usuarioId,))
+        result = cursor.fetchone()
 
-            # Seleccionar los datos en la tabla twofactorcodes
-            select_query = "SELECT code FROM twofactorcodes WHERE idUsuario = %s AND fecha = %s"
-            data = (idUsuarioVer, fechaActualVer)
-            cursor.execute(select_query, data)
-
-            # Recuperar el resultado de la consulta
-            result = cursor.fetchone()
-            cursor.close()
-
-            if result:
-                
-                if (codigoUsuario == result[0]):
-                    estado = 'VERIFICACION COMPLETADA'
-                    return render_template('dashboard.html', estado=estado)
+        if result:
+            codigo_db = result[0]
+            if codigoUsuario == codigo_db:
+                if tipo_usuario == 'admin':
+                #if session.get('tipo_usuario') == 'admin':
+                    return redirect(url_for('dashboard'))  # Redirección al dashboard de administradores
+                elif tipo_usuario == 'profesor':
+                #elif session.get('tipo_usuario') == 'profesor':
+                    return redirect(url_for('profesor_dashboard'))  # Redirección al dashboard de profesores
                 else:
-                    estado = 'CODIGO INCORRECTO'
-                    return render_template('verificacion.html', estado=estado)
+                    return render_template('verificacion.html', error='Tipo de usuario no reconocido.')
 
-            else:
-                estado = 'Error al verificar el código'
-                return render_template('verificacion.html', estado=estado)
 
-            
+    return render_template('verificacion.html')
 
-        except mysql.connector.Error as err:
-            estado = 'Error al verificar el código'
-            print(f"Error al consultar la base de datos: {err}")
-            return render_template('verificacion.html', estado=estado)
+
 
 #FUNCION PARA GENERAR CODIGO DE AUTENTIFICACION
 def generar_codigo_autenticacion():
@@ -212,50 +214,53 @@ def generar_codigo_autenticacion():
     return codigo
 
 def enviar_correo_autenticacion(codigoAutenticacion, emailUsuario):
-
     try:
-        # Construir el mensaje de correo electrónico
         mensaje = MIMEMultipart()
         mensaje['From'] = 'llnbllzero@gmail.com'
         mensaje['To'] = emailUsuario
         mensaje['Subject'] = 'Codigo de Verificacion'
-
-
         texto = f'Este es tu codigo de verificacion para accesar: \n {codigoAutenticacion} \n\n'
         mensaje.attach(MIMEText(texto))
-
-        # Enviar el mensaje de correo electrónico
         servidor = smtplib.SMTP('smtp.gmail.com', 587)
         servidor.starttls()
         servidor.login('clinica.lolsito@gmail.com', 'roqjmysztulyuiqf')
         servidor.sendmail('llnbllzero@gmail.com', emailUsuario, mensaje.as_string())
         servidor.quit()
-
+        print("Correo enviado con código:", codigoAutenticacion)  # Para depuración
         return True
-    
     except Exception as e:
-        print(f"Ha ocurrido un error: {str(e)}")
-        return False  # Retorna False en caso de error
-    
-#FUNCION PARA GUARDAR EL CODIGO EN LA BASE DE DATOS Y PODER INICIAR SESION
-def guardar_codigo_autenticacion_bd(codigoAutenticacion, usuario_id, fechaActual):
+        print(f"Ha ocurrido un error al enviar el correo: {str(e)}")
+        return False
 
+
+def guardar_codigo_autenticacion_bd(codigoAutenticacion, usuario_id, fechaActual):
     try:
         cursor = mysql.connection.cursor()
-
-        # Insertar los datos en la tabla twofactorcodes
         insert_query = "INSERT INTO twofactorcodes (code, idUsuario, fecha) VALUES (%s, %s, %s)"
         data = (codigoAutenticacion, usuario_id, fechaActual)
         cursor.execute(insert_query, data)
-
-        # Confirmar la transacción y cerrar la conexión
         mysql.connection.commit()
         cursor.close()
-        #db.database.close()
-
         print("Código de autenticación guardado con éxito en la base de datos.")
     except MySQLdb._exceptions.MySQLError as err:
         print(f"Error al guardar el código de autenticación en la base de datos: {err}")
+
+def handle_login_process(emailUsuario, usuario_id):
+    # Generar el código de autenticación
+    codigoAutenticacion = generar_codigo_autenticacion()
+    print("Código generado y a enviar:", codigoAutenticacion)  # Para depuración
+
+    # Enviar el correo con el código
+    if enviar_correo_autenticacion(codigoAutenticacion, emailUsuario):
+        # Obtener la fecha actual
+        fechaActual = obtenerFechaActual()
+        # Guardar el código en la base de datos
+        guardar_codigo_autenticacion_bd(codigoAutenticacion, usuario_id, fechaActual)
+        return True
+    else:
+        print("Error al enviar el correo")
+        return False
+
 
 
 
@@ -270,58 +275,18 @@ def obtenerFechaActual():
 
     return fecha_hora_formateada
 
-obtenerFechaActual()
-
-
-
-
-
-
-
-
-
 
 
 # FUNCIONES PARA RELLENAR EL DASHBOARD DE ALUMNOS
-@app.route('/alumnos.html', methods=['POST'])
-def search():
-    query = request.form['query']
+@app.route('/login_alumno', methods=['GET', 'POST'])
+def login_alumno():
+    if request.method == 'POST':
+        correo = request.form['correo']
+        password = request.form['password']
+        # Aquí añadirías la lógica para verificar las credenciales del profesor.
+        return redirect(url_for('alumno_dashboard'))
+    return render_template('login_alumno.html')
 
-    cursor = mysql.database.cursor()
-    sql = "SELECT * FROM alumnos WHERE nombre LIKE %s OR apellido LIKE %s OR id LIKE %s"
-    data = (f'%{query}%', f'%{query}%', f'%{query}%') 
-    cursor.execute(sql, data)
-    alumnos = cursor.fetchall()
-
-    insertObject = []
-    columnNames = [column[0] for column in cursor.description]
-    for record in alumnos:
-        insertObject.append(dict(zip(columnNames, record)))
-    cursor.close()
-
-    cursor.close()
-
-    return render_template('alumnos.html', alumnos=insertObject)
-
-
-# @app.route('/login', methods=['POST'])
-# def login_post():
-#     correo = request.form['correo']
-#     contraseña = request.form['contraseña']
-
-#     #verificar si el usuario es un administrador
-#     cur = mysql.connection.cursor()
-#     cur.execute("SELECT * FROM admin_users WHERE correo = %s", (correo,))
-#     admin_user = cur.fetchone()
-#     cur.close()
-
-#     print("admin_user:", admin_user)
-
-#     if admin_user and admin_user[4] == contraseña:
-#         session['user_id'] = admin_user[0] #guardar el id del administrador
-#         return redirect(url_for('dashboard'))
-#     else:
-#         return redirect(url_for('login'))
     
 
 @app.route('/dashboard')
@@ -338,6 +303,27 @@ def dashboard():
     if not admin:
         return "No tienes permiso"
     return render_template('dashboard.html')
+
+# Ruta para el panel de control de profesores 
+@app.route('/profesor_dashboard')
+def profesor_dashboard():
+    # Verificar si la sesión del profesor está activa
+    if 'cve_profesor' not in session:
+        return redirect(url_for('login'))
+
+    # Obtener la clave del profesor desde la sesión
+    cve_profesor = session['cve_profesor']
+    cursor = mysql.connection.cursor()
+    cursor.execute("SELECT * FROM uni_profesor WHERE cve_profesor = %s", (cve_profesor,))
+    profesor = cursor.fetchone()
+    cursor.close()
+
+    if not profesor:
+        return "No tienes permiso para acceder a este panel."
+
+    # Renderizar el dashboard de profesores
+    return render_template('profesor_dashboard.html')
+
 
 # Ruta para el panel de control de alumnos
 @app.route('/alumno_dashboard')
@@ -358,21 +344,40 @@ def alumno_dashboard():
 
 
 # Ruta para el panel de control de profesores
-@app.route('/profesor_dashboard')
-def profesor_dashboard():
-    if 'user_id' not in session:
-        return redirect(url_for('login'))
-    
-    user_id = session['user_id']
-    cur = mysql.connection.cursor()
-    cur.execute("SELECT * FROM uni_profesor WHERE id = %s", (user_id,))
-    profesor = cur.fetchone()
-    cur.close()
-    
-    if not profesor:
-        return "No tienes permiso para acceder a este panel."
-    
-    return render_template('profesor_dashboard.html')
+@app.route('/login_profesor', methods=['GET', 'POST'])
+def login_profesor():
+    if request.method == 'POST':
+        correo = request.form.get('correo')
+        contrasena = request.form.get('password')
+
+        if not correo or not contrasena:
+            return render_template('login_profesor.html', error='Por favor, completa todos los campos.')
+
+        try:
+            cursor = mysql.connection.cursor()
+            cursor.execute("SELECT cve_profesor, email, contraseña FROM uni_profesor WHERE email = %s", (correo,))
+            profesor = cursor.fetchone()
+
+            if profesor and profesor[2] == contrasena:
+                session['correo_profesor'] = correo  # Guardar el correo en la sesión
+                session['cve_profesor'] = profesor[0]
+                session['tipo_usuario'] = 'profesor'
+
+                # Generación y envío del código de verificación en dos pasos
+                handle_login_process(profesor[1], profesor[0])
+
+                return redirect(url_for('verificar_codigo'))
+            else:
+                return render_template('login_profesor.html', error='Correo o contraseña incorrectos.')
+
+        except MySQLdb._exceptions.MySQLError as error:
+            return render_template('login_profesor.html', error=f'Error al consultar la base de datos: {str(error)}')
+
+    return render_template('login_profesor.html')
+
+
+
+
 
 
 
