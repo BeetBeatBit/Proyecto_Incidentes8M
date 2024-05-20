@@ -53,11 +53,6 @@ mysql = MySQL(app)
 def login():
     return render_template('login.html')
 
-# RUTAS PARA LOS TEMPLATES
-@app.route("/")
-def alumnos():
-    return render_template("alumnos.html")
-
 @app.route("/verificacion")
 def verificacion():
     return render_template("verificacion.html")
@@ -165,7 +160,6 @@ def login2():
         return render_template('/login.html')
 
 
-
 @app.route('/logout')
 def logout():
     session.pop('correo', None) #Eliminar la variable de sesión username
@@ -182,9 +176,10 @@ def verificar_codigo():
             usuarioId = session.get('idUsuario')
         elif tipo_usuario == 'profesor':
             usuarioId = session.get('cve_profesor')
+        elif tipo_usuario == 'alumno':
+            usuarioId = session.get('matricula')
         else:
             return render_template('verificacion.html', error='Tipo de usuario no reconocido.')
-
 
         cursor = mysql.connection.cursor()
         # Asegúrate de que la consulta está utilizando el ID de usuario correcto y ordenando por fecha descendente
@@ -200,6 +195,8 @@ def verificar_codigo():
                 elif tipo_usuario == 'profesor':
                 #elif session.get('tipo_usuario') == 'profesor':
                     return redirect(url_for('profesor_dashboard'))  # Redirección al dashboard de profesores
+                elif tipo_usuario == 'alumno':
+                    return redirect(url_for('alumno_dashboard'))
                 else:
                     return render_template('verificacion.html', error='Tipo de usuario no reconocido.')
 
@@ -262,8 +259,6 @@ def handle_login_process(emailUsuario, usuario_id):
         return False
 
 
-
-
 #FUNCION PARA OBTENER LA FECHA PARA LA AUTENTIFICACION DE 2 PASOS TENGA UN TIEMPO LIMITE
 def obtenerFechaActual():
 
@@ -283,8 +278,30 @@ def login_alumno():
     if request.method == 'POST':
         correo = request.form['correo']
         password = request.form['password']
-        # Aquí añadirías la lógica para verificar las credenciales del profesor.
-        return redirect(url_for('alumno_dashboard'))
+
+        if not correo or not password:
+            return render_template('login_alumno.html', error='Por favor, completa todos los campos.')
+
+        try:
+            cursor = mysql.connection.cursor()
+            cursor.execute("SELECT matricula, email, contraseña FROM uni_alumnos WHERE email = %s", (correo,))
+            alumno = cursor.fetchone()
+
+            if alumno and alumno[2] == password:
+                session['correo_alumno'] = correo  # Guardar el correo en la sesión
+                session['matricula'] = alumno[0]
+                session['tipo_usuario'] = 'alumno'
+
+                # Generación y envío del código de verificación en dos pasos
+                handle_login_process(alumno[1], alumno[0])
+
+                return redirect(url_for('verificar_codigo'))
+            else:
+                return render_template('login_alumno.html', error='Correo o contraseña incorrectos.')
+
+        except MySQLdb._exceptions.MySQLError as error:
+            return render_template('login_alumno.html', error=f'Error al consultar la base de datos: {str(error)}')
+
     return render_template('login_alumno.html')
 
     
@@ -328,19 +345,20 @@ def profesor_dashboard():
 # Ruta para el panel de control de alumnos
 @app.route('/alumno_dashboard')
 def alumno_dashboard():
-    if 'user_id' not in session:
-        return redirect(url_for('login'))
-    
-    user_id = session['user_id']
+    if 'matricula' not in session:
+        return redirect(url_for('login_alumno'))
+
+    matricula = session['matricula']
     cur = mysql.connection.cursor()
-    cur.execute("SELECT * FROM uni_alumnos WHERE id = %s", (user_id,))
+    cur.execute("SELECT * FROM uni_alumnos WHERE matricula = %s", (matricula,))
     alumno = cur.fetchone()
     cur.close()
-    
+
     if not alumno:
         return "No tienes permiso para acceder a este panel."
-    
+
     return render_template('alumno_dashboard.html')
+
 
 
 # Ruta para el panel de control de profesores
